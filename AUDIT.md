@@ -23,8 +23,11 @@ Validation includes 24 automated tests for authentication, malformed input,
 parallel binary transfers, half-close, connection limits, replug, reconnect,
 service forwarding and a simulated slow link. The native macOS ARM64 and Linux
 ARM64 launchers and the packaged app were exercised. The Linux build and tests
-ran in a Debian Bookworm ARM64 container. The macOS installer was exercised;
-the renamed Linux systemd installer has syntax checks only.
+ran in a Debian Bookworm ARM64 container. Both the macOS installer and Linux
+systemd installer were exercised. After publication, the unchanged v1.0.0
+archive was installed on a Raspberry Pi 4; its service was enabled and active,
+and the installed Mac client successfully queried the remote USB daemon. No
+iPhone was attached during this post-release check.
 The macOS archive also includes an x86_64 launcher slice.
 
 An iPhone attached to a Raspberry Pi 4 was paired and queried from a remote Mac
@@ -33,7 +36,8 @@ arbitrary USB devices, cellular performance or every iOS service.
 
 The repository and release archives were checked for credentials, private keys,
 pairing records, private network identifiers, personal paths and build metadata.
-The public project owner appears only in project URLs. Releases contain this
+Source files identify the public project owner only in project URLs. Git uses
+the public account name and GitHub noreply email. Releases contain this
 project's code and launchers, not Python, Tailscale, usbmuxd, libimobiledevice or
 the separate usbfluxd adapter. See DEPENDENCIES.md for separately installed tools.
 
