@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.DS_Store
+build/
+dist/
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+token
+*-token
+private/
+*.log
