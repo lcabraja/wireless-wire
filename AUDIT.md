@@ -42,3 +42,27 @@ project's code and launchers, not Python, Tailscale, usbmuxd, libimobiledevice o
 the separate usbfluxd adapter. See DEPENDENCIES.md for separately installed tools.
 
 This was a source review and functional test, not an independent security audit.
+
+## Management API and optional display
+
+The source tree now includes an optional display and private management API;
+the published v1 archives remain unchanged. HTTP backends bind only to loopback.
+Tailscale Serve handles TLS and supplies verified user identity; the application
+requires an explicit allowed-login match. Port 80 is a fixed HTTPS redirect.
+No Funnel is configured. POST actions reject cross-origin browser requests,
+require a custom header and JSON, and bound request sizes and concurrency.
+Credential enrollment is POST-only with no-store responses. Local Pi processes
+remain trusted because they can reach the authenticated proxy's loopback backend.
+
+The unprivileged API invokes only an argument-free, root-owned helper through
+sudo. That helper allowlists service names/actions, validates Wi-Fi/orientation
+inputs, avoids shell interpolation and suppresses credential-bearing errors.
+It has no shell, arbitrary-file, firmware, package-installation or pairing-record
+endpoint. Wi-Fi saves preserve the active connection; activation can require
+physical recovery when the target network has no working internet connection.
+
+Tests cover identity denial, host/origin checks, JSON requirements, redirects,
+action selection, Wi-Fi serialization, client-enrollment URL validation, shared
+status, display orientations and the bridge. Deployment verification exercised
+real HTTPS enrollment, Mac client installation, iPhone discovery, screen rotation,
+and saving/removing an inactive disposable Wi-Fi profile without switching networks.

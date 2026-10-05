@@ -15,6 +15,18 @@ Read the release README for the supported setup. Release launchers require the
 adjacent `wireless-wire.pyz` and a separately installed Python. Verify release
 checksums before installation. Source checkouts build with `python3 scripts/build.py`.
 
+For a host with the management API installed, prefer its private HTTPS API to
+SSH for status, display rotation, saved Wi-Fi changes and client enrollment.
+Read `api/README.md` in the repository for endpoint schemas. Access requires an
+allowed Tailscale user device; arbitrary tailnet membership and tagged clients
+are insufficient. Do not spoof identity headers or expose the localhost backend.
+Enroll a Mac with `python3 scripts/install-client.py --api-url https://HOST.TAILNET.ts.net`
+after building from current source. This stores the bridge token privately without
+printing it or copying it via SSH. The v1 release archives predate this API.
+Wi-Fi saves preserve the active connection; explicit activation can disconnect
+the host. Initial installation and network recovery still require local access
+or an authorized SSH target. Never change networks just to test the API.
+
 - On the Linux USB host, run `sudo bash scripts/install-server.sh --listen HOST_TAILSCALE_IP`.
 - Privately transfer `/etc/wireless-wire/token` over the authorized SSH connection.
   Do not print it, pass it on a command line, or put it in this repository. Keep

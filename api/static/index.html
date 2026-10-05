@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wireless Wire</title><link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script></head>
+<body><main><header><h1>Wireless Wire<span class="mark">↗</span></h1><span id="health">Connecting…</span></header>
+<p id="message" role="status" aria-live="polite"></p>
+<section class="overview"><div><h2>Network</h2><dl id="network"></dl></div><div><h2>USB</h2><dl id="usb"></dl></div><div><h2>Bridge</h2><dl id="bridge"></dl><button id="restart">Restart bridge</button></div></section>
+<div class="settings"><section><h2>Display</h2><p id="screen-state"></p><div class="rotations" aria-label="Screen orientation"><button data-angle="0">0°<small>Portrait</small></button><button data-angle="90">90°<small>Landscape</small></button><button data-angle="180">180°<small>Portrait</small></button><button data-angle="270">270°<small>Landscape</small></button></div></section>
+<section><h2>Connect a Mac</h2><p>Run this from the Wireless Wire source checkout on a Mac connected to your Tailscale account.</p><pre id="setup"></pre><button id="download">Download client configuration</button><p class="hint">The downloaded file contains a bridge credential. Keep it private.</p></section>
+<section><h2>Wi-Fi</h2><form id="wifi-form"><label>Network name<input name="ssid" required maxlength="32" autocomplete="off"></label><label>Password<input name="password" type="password" required minlength="8" maxlength="63" autocomplete="new-password"></label><button type="submit">Save network</button></form><p class="hint">Saving keeps the current connection. WPA2-Personal networks only.</p></section>
+<section><h2>Saved networks</h2><ul id="networks"></ul><p class="hint">Switching networks briefly disconnects the Pi. It must have internet access to return to Tailscale.</p></section></div>
+<footer id="updated"></footer></main></body></html>

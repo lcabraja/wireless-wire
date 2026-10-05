@@ -20,6 +20,11 @@ and keep `wireless-wire` and `wireless-wire.pyz` together.
 
 ## Setup
 
+For browser/API control without SSH, install the optional [management API](api/README.md)
+on the Pi. It provides private HTTPS, Wi-Fi and display controls, and Mac enrollment
+with `python3 scripts/install-client.py --api-url https://PI_NAME.TAILNET.ts.net`.
+The USB bridge still uses port 48200. Initial host installation uses the steps below.
+
 From source, build with `python3 scripts/build.py`. Release archives are already built.
 
 On the Linux USB host:

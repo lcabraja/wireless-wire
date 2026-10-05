@@ -13,7 +13,7 @@ display/
   draw/status.py                 Pillow layout and image rendering
   driver/turing_35_rev_a/         Turing/TURZX 3.5-inch revision A adapter
   driver/__init__.py             Adapter registry
-  data.py                       USB, Wi-Fi, Tailscale and bridge status
+  data.py                       Import shared host status from the core package
   common.py                     Text sanitization
   status_display.py             Polling and changed-rectangle updates
   control.py                    Installed rotation command
@@ -23,6 +23,8 @@ display/
 The core bridge does not import this component or depend on Pillow. Install the
 screen separately using the source checkout instructions below. The existing v1
 release archives do not include the optional screen component.
+Status collection lives in `src/wireless_wire/host_status.py` and is shared with
+the optional management API, so both interfaces report the same state.
 
 `draw.render(state, size)` returns an RGB image without opening USB or querying
 the network. It currently lays out 320 × 480 and 480 × 320 screens.

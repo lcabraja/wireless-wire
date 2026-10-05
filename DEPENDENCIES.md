@@ -10,6 +10,10 @@ local status. The installer uses distribution packages. None is bundled in the
 bridge zipapp, and the bridge runs without them. The display adapter in this
 repository is our custom userspace implementation.
 
+The optional `api/` management service uses the Python standard library, existing
+Tailscale Serve for HTTPS/identity, and a narrow sudo helper for host changes.
+Its browser interface has no downloaded scripts, fonts or package dependencies.
+
 - Python 3.11+ supplies the standard library and interpreter.
 - Linux `usbmuxd` handles the actual USB connection and pairing records.
 - `libimobiledevice` tools provide optional pairing and device diagnostics.
