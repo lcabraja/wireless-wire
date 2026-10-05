@@ -69,3 +69,6 @@ unstable cellular links. Pairing and device queries were tested on real hardware
 
 Tests: `python3 -m unittest discover -s tests -v`. Simulation: `python3 bin/wireless-wire demo`.
 See [AUDIT.md](AUDIT.md) and [DEPENDENCIES.md](DEPENDENCIES.md). MIT licensed.
+
+Optional [TURZX USB status display](display/README.md): live USB, Wi-Fi and
+authenticated client status on the Linux host.

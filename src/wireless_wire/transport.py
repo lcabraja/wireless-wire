@@ -239,14 +239,30 @@ class ManagedServer:
 
 
 class PiServer(ManagedServer):
-    def __init__(self, host, port, token, usbmux_socket, timeout=30, **kwargs):
+    def __init__(self, host, port, token, usbmux_socket, timeout=30, status_file=None, **kwargs):
         super().__init__(host, port, **kwargs)
         self.token = token
         self.usbmux_socket = str(usbmux_socket)
         self.timeout = timeout
+        from .status import ConnectionStatus
+        self.status = ConnectionStatus(status_file) if status_file else None
+
+    async def start(self):
+        await super().start()
+        if self.status:
+            self.status.start()
+        return self
+
+    async def close(self):
+        try:
+            await super().close()
+        finally:
+            if self.status:
+                await self.status.close()
 
     async def handle(self, reader, writer):
         backend_writer = None
+        peer = None
         try:
             async with asyncio.timeout(self.timeout):
                 if await reader.readexactly(len(MAGIC)) != MAGIC:
@@ -263,9 +279,14 @@ class PiServer(ManagedServer):
                     await write_json(writer, {"status": "error", "error": "Pi usbmuxd socket unavailable"})
                     return
                 await write_json(writer, {"status": "ok"})
+            if self.status:
+                peer = writer.get_extra_info("peername")[0]
+                self.status.connected(peer)
             sent, received = await duplex(reader, writer, backend_reader, backend_writer)
             LOG.info("Session closed: sent=%d received=%d", sent, received)
         finally:
+            if peer is not None:
+                self.status.disconnected(peer)
             await close_writer(backend_writer)
 
 

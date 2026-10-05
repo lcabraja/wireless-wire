@@ -1,8 +1,14 @@
 # Separately installed dependencies
 
 The repository and release archives contain our Python implementation, C launcher,
-installation scripts, tests and skill. No upstream source archives, adapters,
-third-party executables or Python runtime are bundled.
+installation scripts, tests and skill. No third-party source archives, drivers,
+executables or Python runtime are bundled.
+
+The optional source-only `display/` component uses separately installed Pillow
+and DejaVu fonts, plus Linux NetworkManager (`nmcli`) and iproute2 (`ip`) for
+local status. The installer uses distribution packages. None is bundled in the
+bridge zipapp, and the bridge runs without them. The display adapter in this
+repository is our custom userspace implementation.
 
 - Python 3.11+ supplies the standard library and interpreter.
 - Linux `usbmuxd` handles the actual USB connection and pairing records.

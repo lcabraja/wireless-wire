@@ -1,5 +1,6 @@
 import asyncio
 import hashlib
+import json
 import os
 import socket
 import struct
@@ -75,7 +76,9 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
         self.tmp = tempfile.TemporaryDirectory(prefix="piph-test-", dir="/tmp")
         self.path = Path(self.tmp.name) / "mux"
         self.backend = await FakeMux(self.path).start()
-        self.pi = await PiServer("127.0.0.1", 0, "test-token", self.path).start()
+        self.status_path = Path(self.tmp.name) / "status.json"
+        self.pi = await PiServer("127.0.0.1", 0, "test-token", self.path,
+                                 status_file=self.status_path).start()
         self.mac = await MacBridge(0, "127.0.0.1", self.pi.port, "test-token").start()
 
     async def asyncTearDown(self):
@@ -88,6 +91,36 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
         found = await list_devices(port=self.mac.port)
         self.assertEqual(found[0]["DeviceID"], 7)
         self.assertEqual(found[0]["Properties"]["ConnectionType"], "USB")
+
+    async def test_status_tracks_only_authenticated_live_sessions_and_shutdown(self):
+        with self.assertRaises(BridgeError):
+            await open_remote("127.0.0.1", self.pi.port, "wrong-token")
+        self.assertEqual(json.loads(self.status_path.read_text())["peers"], {})
+        _, first = await open_remote("127.0.0.1", self.pi.port, "test-token")
+        _, second = await open_remote("127.0.0.1", self.pi.port, "test-token")
+        try:
+            state = json.loads(self.status_path.read_text())
+            self.assertEqual(state["peers"], {"127.0.0.1": 2})
+            self.assertNotIn("test-token", self.status_path.read_text())
+            self.assertEqual(self.status_path.stat().st_mode & 0o777, 0o640)
+            await close_writer(first)
+            for _ in range(100):
+                if json.loads(self.status_path.read_text())["peers"] == {"127.0.0.1": 1}:
+                    break
+                await asyncio.sleep(0.01)
+            self.assertEqual(json.loads(self.status_path.read_text())["peers"], {"127.0.0.1": 1})
+            await self.pi.close()
+            state = json.loads(self.status_path.read_text())
+            self.assertFalse(state["running"])
+            self.assertEqual(state["peers"], {})
+            self.assertEqual(state["last_peer"], "127.0.0.1")
+        finally:
+            await close_writer(first)
+            await close_writer(second)
+
+    async def test_failed_status_output_does_not_break_the_bridge(self):
+        self.pi.status.path = Path(self.tmp.name) / "missing-directory" / "status.json"
+        self.assertEqual(len(await list_devices(port=self.mac.port)), 1)
 
     async def test_authentication_never_opens_backend_for_wrong_token(self):
         with self.assertRaisesRegex(BridgeError, "Authentication"):

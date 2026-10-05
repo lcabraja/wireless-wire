@@ -32,6 +32,8 @@ def parser():
         if name == "serve":
             part.add_argument("--listen", default="127.0.0.1", help="Literal loopback or Tailscale IP")
             part.add_argument("--usbmux-socket", default="/var/run/usbmuxd")
+            part.add_argument("--status-file", type=Path, default=os.environ.get("WIRELESS_WIRE_STATUS_FILE"),
+                              help="Private local status JSON for a display")
         else:
             part.add_argument("--remote", required=True, help="Pi Tailscale IP:48200 or SSH tunnel endpoint")
     for name in ("devices", "run", "forward"):
@@ -123,7 +125,8 @@ async def async_main(args):
         token = read_token(args.token_file.expanduser())
         opts = {"timeout": args.connect_timeout, "max_connections": args.max_connections}
         if args.command == "serve":
-            service = PiServer(args.listen, args.port, token, args.usbmux_socket, **opts)
+            service = PiServer(args.listen, args.port, token, args.usbmux_socket,
+                               status_file=args.status_file, **opts)
         else:
             host, port = endpoint(args.remote)
             service = MacBridge(args.port, host, port, token, **opts)
